@@ -4,7 +4,18 @@ An open-source Flask-based shipping web application.
 
 Built on top of the excellent [flask-base](https://github.com/hack4impact/flask-base) template, this project adapts the boilerplate for shipping / logistics workflows (orders, tracking, admin management, etc.).
 
-**Status:** Mature foundation from flask-base + project-specific adaptations. Last major activity 2024. Ready for further feature work, modernization, and portfolio demos.
+**Status:** Mature flask-base foundation plus project-specific adaptations. Last major application work predates 2026 portfolio refresh. README is framed for hiring review; domain features and test/deploy polish are next.
+
+### Portfolio roadmap
+
+| Step | Status |
+|------|--------|
+| Polish README | ✅ this file |
+| Core shipping features (orders, tracking numbers, status events) | 🗓 next |
+| Tests (pytest against order/tracking flows) | 🗓 |
+| Deploy demo (Docker Compose, modern Python 3.12) | 🗓 |
+
+Priority in the wider portfolio: work lands **after** Autonomous AI Orchestrator MFA + agent-core merges.
 
 ---
 
@@ -202,7 +213,7 @@ $ honcho start -e config.env -f Local
 For Windows users having issues with binding to a redis port locally, refer to [this issue](https://github.com/hack4impact/flask-base/issues/132).
 
 
-## Gettin up and running with Docker
+## Getting up and running with Docker
 
 Currently we have a `Dockerfile` intended for testing purposes and it automates the whole cycle of running the application, setting up the database and redis. 
 
@@ -210,13 +221,13 @@ Currently we have a `Dockerfile` intended for testing purposes and it automates 
 ##### How to use the docker file 
 In only three simple steps :
 - change the variables `MAIL_USERNAME` , `MAIL_PASSWORD` and `SECRET_KEY`
-- `docker build -t <image_name> . 
+- `docker build -t <image_name> .`
 - `docker run -it -d -p 5000:5000 --name <container name> <image_name> /bin/bash`
 - To run in foreground mode `docker run -it -p 5000:5000 --name <container name> <image_name> /bin/bash`
 
 ##### Note
 
-A more robust version with docker-compose is being developed to separate redis in separate container and allow the deployment of production-level applications automatically without the need of manual provisioning
+A more robust version with docker-compose is being developed to separate redis in a separate container and allow the deployment of production-level applications automatically without the need of manual provisioning.
 
 ## Formatting code
 
@@ -243,4 +254,4 @@ https://medium.freecodecamp.com/how-we-got-a-2-year-old-repo-trending-on-github-
 
 ---
 
-**Portfolio note:** This repository is part of [Tony Rolfe](https://github.com/TonyRolfe)'s public portfolio. Future work will focus on shipping-domain features, modern Python/Flask practices, improved testing, and deployment demos.
+**Portfolio note:** This repository is part of [Tony Rolfe](https://github.com/TonyRolfe)'s public portfolio. Next implementation pass: shipping-domain models (orders + tracking events), pytest coverage, Python 3.12, and a Compose demo.
