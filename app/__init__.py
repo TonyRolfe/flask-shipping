@@ -77,4 +77,7 @@ def create_app(config):
     from .admin import admin as admin_blueprint
     app.register_blueprint(admin_blueprint, url_prefix='/admin')
 
+    from .shipments import shipments as shipments_blueprint
+    app.register_blueprint(shipments_blueprint, url_prefix='/api')
+
     return app
