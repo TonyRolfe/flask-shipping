@@ -4,18 +4,34 @@ An open-source Flask-based shipping web application.
 
 Built on top of the excellent [flask-base](https://github.com/hack4impact/flask-base) template, this project adapts the boilerplate for shipping / logistics workflows (orders, tracking, admin management, etc.).
 
-**Status:** Mature flask-base foundation plus project-specific adaptations. Last major application work predates 2026 portfolio refresh. README is framed for hiring review; domain features and test/deploy polish are next.
+**Status:** flask-base foundation plus shipment orders, tracking events, and a JSON create/track API on `feat/orders-tracking`.
 
 ### Portfolio roadmap
 
 | Step | Status |
 |------|--------|
 | Polish README | ✅ this file |
-| Core shipping features (orders, tracking numbers, status events) | 🗓 next |
-| Tests (pytest against order/tracking flows) | 🗓 |
-| Deploy demo (Docker Compose, modern Python 3.12) | 🗓 |
+| Core shipping features (orders, tracking numbers, status events) | ✅ models + `/api/shipments` on `feat/orders-tracking` |
+| Tests (order/tracking model and API) | ✅ `tests/test_shipment.py`, `tests/test_shipment_api.py` |
+| Deploy demo (Docker Compose, modern Python 3.12) | 🗓 next |
 
-Priority in the wider portfolio: work lands **after** Autonomous AI Orchestrator MFA + agent-core merges.
+### Shipment API (branch `feat/orders-tracking`)
+
+```bash
+curl -s -X POST http://localhost:5000/api/shipments \
+  -H 'Content-Type: application/json' \
+  -d '{"origin":"Austin, TX","destination":"Denver, CO"}'
+
+curl -s http://localhost:5000/api/shipments/FS7K2Q9M4N1P8R
+
+curl -s -X POST http://localhost:5000/api/shipments/FS7K2Q9M4N1P8R/events \
+  -H 'Content-Type: application/json' \
+  -d '{"status":"in_transit","location":"Dallas"}'
+```
+
+Allowed statuses: `created`, `labeled`, `in_transit`, `out_for_delivery`, `delivered`, `exception`.
+
+Priority in the wider portfolio: orchestrator MFA + agent-core still need a manual rebase (GitHub update-branch reports conflicts; check runs are not visible to this session).
 
 ---
 
@@ -254,4 +270,4 @@ https://medium.freecodecamp.com/how-we-got-a-2-year-old-repo-trending-on-github-
 
 ---
 
-**Portfolio note:** This repository is part of [Tony Rolfe](https://github.com/TonyRolfe)'s public portfolio. Next implementation pass: shipping-domain models (orders + tracking events), pytest coverage, Python 3.12, and a Compose demo.
+**Portfolio note:** This repository is part of [Tony Rolfe](https://github.com/TonyRolfe)'s public portfolio. Domain model and JSON tracking API are on `feat/orders-tracking`. Next: Python 3.12 and a Compose demo.
