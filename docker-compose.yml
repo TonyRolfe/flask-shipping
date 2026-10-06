@@ -1,0 +1,12 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_CONFIG: default
+      SECRET_KEY: dev-only-change-me
+      MAIL_USERNAME: demo@example.com
+      MAIL_PASSWORD: unused

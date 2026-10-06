@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FLASK_CONFIG=default \
+    SECRET_KEY=dev-only-change-me
+
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+# Pin the import-compatible stack over the unpinned requirements.txt.
+# psycopg2 is unused by the SQLite demo.
+RUN grep -v '^psycopg2' requirements.txt > /tmp/req.txt \
+    && pip install --no-cache-dir -r /tmp/req.txt \
+    "Flask==2.2.5" \
+    "Flask-SQLAlchemy==2.5.1" \
+    "Werkzeug==2.2.3" \
+    "itsdangerous==2.0.1" \
+    "Jinja2==3.1.4" \
+    "MarkupSafe==2.1.5" \
+    "WTForms==2.2.1"
+
+COPY . .
+RUN python manage.py recreate_db
+EXPOSE 5000
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "manage:app"]
