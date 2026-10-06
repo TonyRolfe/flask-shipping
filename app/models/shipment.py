@@ -49,6 +49,10 @@ class ShipmentOrder(db.Model):
     def __init__(self, **kwargs):
         if not kwargs.get('tracking_number'):
             kwargs['tracking_number'] = generate_tracking_number()
+        # Column default is only applied on flush. Set it here so a rejected
+        # event still leaves a new order in the created state.
+        if not kwargs.get('status'):
+            kwargs['status'] = 'created'
         super(ShipmentOrder, self).__init__(**kwargs)
 
     def record_event(self, status, note=None, location=None):
