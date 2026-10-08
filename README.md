@@ -4,7 +4,7 @@ An open-source Flask-based shipping web application.
 
 Built on top of the excellent [flask-base](https://github.com/hack4impact/flask-base) template, this project adapts the boilerplate for shipping / logistics workflows (orders, tracking, admin management, etc.).
 
-**Status:** flask-base foundation plus shipment orders, tracking events, and a JSON create/track API on `feat/orders-tracking`.
+**Status:** flask-base foundation plus shipment orders, tracking events, and a JSON create/list/track API on `feat/orders-tracking`.
 
 ### Portfolio roadmap
 
@@ -12,7 +12,7 @@ Built on top of the excellent [flask-base](https://github.com/hack4impact/flask-
 |------|--------|
 | Polish README | ✅ this file |
 | Core shipping features (orders, tracking numbers, status events) | ✅ models + `/api/shipments` on `feat/orders-tracking` |
-| Tests (order/tracking model and API) | ✅ `tests/test_shipment.py`, `tests/test_shipment_api.py` (9 passed locally on the Flask 2.2 pin) |
+| Tests (order/tracking model and API) | ✅ `tests/test_shipment.py`, `tests/test_shipment_api.py` |
 | Deploy demo (Docker Compose, Python 3.11) | ✅ `docker-compose.yml` + `Dockerfile.demo` |
 
 ### Shipment API (branch `feat/orders-tracking`)
@@ -22,6 +22,9 @@ curl -s -X POST http://localhost:5000/api/shipments \
   -H 'Content-Type: application/json' \
   -d '{"origin":"Austin, TX","destination":"Denver, CO"}'
 
+curl -s http://localhost:5000/api/shipments
+curl -s 'http://localhost:5000/api/shipments?status=in_transit'
+
 curl -s http://localhost:5000/api/shipments/FS7K2Q9M4N1P8R
 
 curl -s -X POST http://localhost:5000/api/shipments/FS7K2Q9M4N1P8R/events \
@@ -29,7 +32,7 @@ curl -s -X POST http://localhost:5000/api/shipments/FS7K2Q9M4N1P8R/events \
   -d '{"status":"in_transit","location":"Dallas"}'
 ```
 
-Allowed statuses: `created`, `labeled`, `in_transit`, `out_for_delivery`, `delivered`, `exception`.
+Allowed statuses: `created`, `labeled`, `in_transit`, `out_for_delivery`, `delivered`, `exception`. `GET /api/shipments` returns newest first. An unknown `status` query returns 400.
 
 ### Demo (Compose)
 
@@ -89,4 +92,4 @@ Contributions are welcome. See [CONDUCT.md](./CONDUCT.md).
 
 ---
 
-**Portfolio note:** Part of [Tony Rolfe](https://github.com/TonyRolfe)'s public portfolio. Orders, tracking, tests, and the Python 3.11 Compose demo are on `feat/orders-tracking`.
+**Portfolio note:** Part of [Tony Rolfe](https://github.com/TonyRolfe)'s public portfolio. Orders, tracking, list, tests, and the Python 3.11 Compose demo are on `feat/orders-tracking`.
