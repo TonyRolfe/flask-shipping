@@ -17,15 +17,18 @@ class ShipmentApiTestCase(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
-    def test_create_and_track(self):
-        response = self.client.post(
+    def _create(self, origin='Austin, TX', destination='Denver, CO'):
+        return self.client.post(
             '/api/shipments',
             data=json.dumps({
-                'origin': 'Austin, TX',
-                'destination': 'Denver, CO',
+                'origin': origin,
+                'destination': destination,
             }),
             content_type='application/json',
         )
+
+    def test_create_and_track(self):
+        response = self._create()
         self.assertEqual(response.status_code, 201)
         body = json.loads(response.data)
         self.assertTrue(body['tracking_number'].startswith('FS'))
@@ -50,6 +53,35 @@ class ShipmentApiTestCase(unittest.TestCase):
         self.assertEqual(tracked['status'], 'in_transit')
         self.assertEqual(tracked['events'][-1]['location'], 'Dallas')
 
+    def test_list_and_status_filter(self):
+        first = json.loads(self._create().data)
+        second = json.loads(
+            self._create(destination='Seattle, WA').data)
+        self.client.post(
+            '/api/shipments/' + second['tracking_number'] + '/events',
+            data=json.dumps({'status': 'labeled'}),
+            content_type='application/json',
+        )
+
+        listed = self.client.get('/api/shipments')
+        self.assertEqual(listed.status_code, 200)
+        numbers = [
+            item['tracking_number']
+            for item in json.loads(listed.data)['shipments']
+        ]
+        self.assertEqual(numbers[0], second['tracking_number'])
+        self.assertIn(first['tracking_number'], numbers)
+
+        labeled = self.client.get('/api/shipments?status=labeled')
+        self.assertEqual(labeled.status_code, 200)
+        labeled_body = json.loads(labeled.data)['shipments']
+        self.assertEqual(len(labeled_body), 1)
+        self.assertEqual(
+            labeled_body[0]['tracking_number'], second['tracking_number'])
+
+        bad = self.client.get('/api/shipments?status=teleported')
+        self.assertEqual(bad.status_code, 400)
+
     def test_missing_fields(self):
         response = self.client.post(
             '/api/shipments',
@@ -63,14 +95,7 @@ class ShipmentApiTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_unknown_status(self):
-        created = self.client.post(
-            '/api/shipments',
-            data=json.dumps({
-                'origin': 'Austin, TX',
-                'destination': 'Denver, CO',
-            }),
-            content_type='application/json',
-        )
+        created = self._create()
         number = json.loads(created.data)['tracking_number']
         response = self.client.post(
             '/api/shipments/' + number + '/events',

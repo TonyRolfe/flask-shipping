@@ -46,6 +46,22 @@ def create_shipment():
     return jsonify(_serialize(order)), 201
 
 
+@shipments.route('/shipments', methods=['GET'])
+def list_shipments():
+    """List orders, optionally filtered by current status."""
+    status = (request.args.get('status') or '').strip()
+    query = ShipmentOrder.query
+    if status:
+        if status not in ORDER_STATUSES:
+            return jsonify({
+                'error': 'unknown status',
+                'allowed': list(ORDER_STATUSES),
+            }), 400
+        query = query.filter_by(status=status)
+    orders = query.order_by(ShipmentOrder.id.desc()).all()
+    return jsonify({'shipments': [_serialize(order) for order in orders]})
+
+
 @shipments.route('/shipments/<tracking_number>', methods=['GET'])
 def get_shipment(tracking_number):
     order = ShipmentOrder.query.filter_by(
